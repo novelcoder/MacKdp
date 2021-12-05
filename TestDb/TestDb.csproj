@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Microsoft.Data.Sqlite" />
+    <None Remove="SQLitePCLRaw.provider.dynamic_cdecl" />
+    <None Remove="SQLitePCLRaw.lib.e_sqlite3" />
+    <None Remove="SQLitePCLRaw.core" />
+    <None Remove="SQLite" />
+    <None Remove="Microsoft.EntityFrameworkCore.Sqlite" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.21" />
+    <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.0.7" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.0.7" />
+    <PackageReference Include="SQLitePCLRaw.core" Version="2.0.7" />
+    <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.21" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.21" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FickleDragon.MacKdp.DataContracts\FickleDragon.MacKdp.DataContracts.csproj" />
+  </ItemGroup>
+</Project>

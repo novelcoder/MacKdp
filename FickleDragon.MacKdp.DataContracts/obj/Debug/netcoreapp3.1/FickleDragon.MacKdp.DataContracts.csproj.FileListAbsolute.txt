@@ -1,0 +1,11 @@
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.csproj.AssemblyReference.cache
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.AssemblyInfoInputs.cache
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.AssemblyInfo.cs
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.csproj.CoreCompileInputs.cache
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/bin/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.dll.config
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/bin/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.deps.json
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/bin/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.dll
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/bin/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.pdb
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.dll
+/Users/jamesgreenwood/Projects/MacKdp/FickleDragon.MacKdp.DataContracts/obj/Debug/netcoreapp3.1/FickleDragon.MacKdp.DataContracts.pdb
