@@ -1,5 +1,5 @@
 ﻿using System;
-using FickleDragon.MacKdp.DataContracts;
+using System.IO;
 
 namespace TestDb
 {
@@ -7,16 +7,25 @@ namespace TestDb
     {
         static void Main(string[] args)
         {
-
             try
             {
-                using (var db = new KdpDbContext())
+                if (args.Length >= 1)
                 {
-                    foreach (var rr in db.BookEntries)
+                    Console.Write("Processing File:\t");
+                    Console.WriteLine(args[0]);
+
+
+                    if (File.Exists(args[0]))
                     {
-                        Console.WriteLine("{0} ASIN: {1}", rr.KENP, rr.ASIN);
+                        using (var fs = File.OpenRead(args[0]))
+                        {
+                            FickleDragon.MacKdp.ExcelUtility.WorkbookUtility.Parse(fs, args[0], "berandor@gmail.com");
+                        }
                     }
-                    Console.WriteLine("Hello World!");
+                    else
+                    {
+                        Console.WriteLine("File Doesn't Exist");
+                    }
                 }
             }
 
@@ -25,6 +34,10 @@ namespace TestDb
                 string sqlExcMsg = string.Format("{0} Inner Exception: {1} Stack Trace: {2}", sqlex.Message, sqlex.InnerException, sqlex.StackTrace);
                 Console.WriteLine(sqlex.Message);
                 Console.WriteLine(sqlex.InnerException);
+            }
+            finally
+            {
+                Console.WriteLine("Program Complete");
             }
         }
     }
