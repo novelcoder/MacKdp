@@ -34,21 +34,28 @@ namespace FickleDragon.MacKdp.ExcelUtility
             //sheets prior to June 2017 use first sheet, different parsing
             ExcelWorksheet sheet = workbook.Worksheets[0];
             bool afterJune2017 = false;
+            var ws = workbook.Worksheets["Total Royalty"];
+            if ( ws != null
+              && sheet.Cells[1, 1].GetValue<string>() == "Sales Period")
+            {
+                afterJune2017 = true;
+            }
+
 
             //after Oct 2019, hardcover is found in 4, total moved to 5
-            for (int iii = 4; iii <= 5; iii++)
-            {
-                if (workbook.Worksheets.Count >= iii) //protect from bad array reference
-                {
-                    sheet = workbook.Worksheets[iii];
-                    if (sheet.Name == "Total Royalty"
-                      && sheet.Cells[1, 1].GetValue<string>() == "Sales Period")
-                    {
-                        afterJune2017 = true;
-                        break;
-                    }
-                }
-            }
+            //for (int iii = 4; iii <= 5; iii++)
+            //{
+            //    if (workbook.Worksheets.Count >= iii) //protect from bad array reference
+            //    {
+            //        sheet = workbook.Worksheets[iii];
+            //        if (sheet.Name == "Total Royalty"
+            //          && sheet.Cells[1, 1].GetValue<string>() == "Sales Period")
+            //        {
+            //            afterJune2017 = true;
+            //            break;
+            //        }
+            //    }
+            //}
 
             if (afterJune2017)
             {
@@ -239,17 +246,17 @@ namespace FickleDragon.MacKdp.ExcelUtility
                 for (int row = 1; row <= endDim.Row; row++)
                 {
                     string asin = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).ASINColNum);
-                    string title = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).TitleColNum);
-                    double netSold = sheet.GetValue<double>(row, Workbook.ForDate(workbookEndDate).NetSoldColNum);
-                    string royaltyTypeString = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).RoyaltyTypeColNum);
-                    double royalty = sheet.GetValue<double>(row, Workbook.ForDate(workbookEndDate).RoyaltyColNum);
-                    string typeStr = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).TypeColNum);
 
                     // actual sale
                     if (asin != null
                         && asin.Length == 10
                         && asin.Substring(0, 2) == "B0")
                     {
+                        string title = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).TitleColNum);
+                        double netSold = sheet.GetValue<double>(row, Workbook.ForDate(workbookEndDate).NetSoldColNum);
+                        string royaltyTypeString = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).RoyaltyTypeColNum);
+                        double royalty = sheet.GetValue<double>(row, Workbook.ForDate(workbookEndDate).RoyaltyColNum);
+                        string typeStr = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).TypeColNum);
 
                         if (dbContext.RoyaltyTypes.FirstOrDefault(x => x.RoyaltyTypeID == royaltyTypeString) == null)
                         {
@@ -283,8 +290,8 @@ namespace FickleDragon.MacKdp.ExcelUtility
                         }
 
                         dbContext.BookEntries.Add(bookEntry);
-                        dbContext.SaveChanges();
                     }
+                    dbContext.SaveChanges();
                 }
             }
         }
