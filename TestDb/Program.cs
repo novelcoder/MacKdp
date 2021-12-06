@@ -11,20 +11,22 @@ namespace TestDb
             {
                 if (args.Length >= 1)
                 {
-                    Console.Write("Processing File:\t");
+                    Console.Write("Processing Directory:\t");
                     Console.WriteLine(args[0]);
-
-
-                    if (File.Exists(args[0]))
+                    if (Directory.Exists(args[0]))
                     {
-                        using (var fs = File.OpenRead(args[0]))
+                        foreach (var file in Directory.EnumerateFiles(args[0],"*.xlsx"))
                         {
-                            FickleDragon.MacKdp.ExcelUtility.WorkbookUtility.Parse(fs, args[0]);
+                            Console.WriteLine("File: {0}", file);
+                            using (var fs = File.OpenRead(file))
+                            {
+                               FickleDragon.MacKdp.ExcelUtility.WorkbookUtility.Parse(fs, file);
+                            }
                         }
                     }
                     else
                     {
-                        Console.WriteLine("File Doesn't Exist");
+                        Console.WriteLine("Directory does not exist {0)", args[0]);
                     }
                 }
             }

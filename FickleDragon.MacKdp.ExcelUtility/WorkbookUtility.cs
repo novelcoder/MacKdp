@@ -315,6 +315,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
                 {
                     var bookEntries = dbContext.BookEntries.Where(x => x.WorkbookFileID == workbookFile.WorkbookFileID);
                     dbContext.BookEntries.RemoveRange(bookEntries);
+                    dbContext.SaveChanges();
                 }
 
                 string lastRoyaltyType = string.Empty;
