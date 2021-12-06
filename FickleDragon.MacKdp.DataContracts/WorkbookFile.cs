@@ -12,6 +12,5 @@ namespace FickleDragon.MacKdp.DataContracts
 
 		public string FileName { get; set; }
 		public DateTime FileDate { get; set; }
-		public string EmailAddress { get; set; }
 	}
 }

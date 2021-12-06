@@ -123,8 +123,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
                 using (var dbContext = new KdpDbContext())
                 {
                     var byMonth = dbContext.BookEntries
-                                        .Where(x => x.WorkbookFile.EmailAddress == emailAddress
-                                             && ASINs.Contains(x.ASIN)
+                                        .Where(x => ASINs.Contains(x.ASIN)
                                              && dates.Contains(x.WorkbookFile.FileDate))
                                         .GroupBy(d => new { d.WorkbookFile.FileDate })
                                         .Select(d =>
@@ -371,8 +370,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
         private static IEnumerable<RoyaltyNormalizedBook> NormalizeRoyalty(IQueryable<BookEntry> bookQuery, KdpDbContext dbContext, string emailAddress, List<string> ASINs, List<DateTime> dates)
         {
             var byMonthTitle = bookQuery
-                                .Where(x => x.WorkbookFile.EmailAddress == emailAddress
-                                             && ASINs.Contains(x.ASIN)
+                                .Where(x =>  ASINs.Contains(x.ASIN)
                                              && dates.Contains(x.WorkbookFile.FileDate))
                                 .GroupBy(d => new { d.ASIN, d.WorkbookFile.FileDate, d.RoyaltyTypeID })
                                 .Select(d =>

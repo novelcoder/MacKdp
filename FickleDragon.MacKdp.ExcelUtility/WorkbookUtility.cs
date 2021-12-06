@@ -9,11 +9,9 @@ namespace FickleDragon.MacKdp.ExcelUtility
 {
     public class WorkbookUtility
     {
-        public static string EmailAddress { get { return "berandor@gmail.com"; } }
 
-        public static void Parse(Stream fs, string file, string emailAddress)
+        public static void Parse(Stream fs, string file)
         {
-
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             string fileExtension = Path.GetExtension(file);
@@ -34,7 +32,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
             }
 
             //sheets prior to June 2017 use first sheet, different parsing
-            ExcelWorksheet sheet = workbook.Worksheets[1];
+            ExcelWorksheet sheet = workbook.Worksheets[0];
             bool afterJune2017 = false;
 
             //after Oct 2019, hardcover is found in 4, total moved to 5
@@ -54,7 +52,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
 
             if (afterJune2017)
             {
-                ParseKDP2(sheet, file, emailAddress);
+                ParseKDP2(sheet, file);
             }
             else
             {
@@ -84,7 +82,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
                     if (workbookEndDate == DateTime.MinValue)
                         throw new Exception("Date not located in worksheet[1]");
 
-                    ParseKDP(workbook, file, emailAddress, workbookEndDate);
+                    ParseKDP(workbook, file, workbookEndDate);
                 }
                 else //check for ACX
                 {
@@ -92,19 +90,19 @@ namespace FickleDragon.MacKdp.ExcelUtility
                     string acxCell = sheet.GetValue<string>(1, 16);
                     if (acxCell?.ToLower() == acx)
                     {
-                        ParseACX(sheet, file, emailAddress);
-                    } 
-                    else if ( workbook.Worksheets.Count > 1
+                        ParseACX(sheet, file);
+                    }
+                    else if (workbook.Worksheets.Count > 1
                            && workbook.Worksheets[2].Name == "Sales Details")
                     {
                         sheet = workbook.Worksheets[2];
-                        ParseACX(sheet, file, emailAddress);
+                        ParseACX(sheet, file);
                     }
                 }
             }
         }
 
-        private static void ParseACX(ExcelWorksheet sheet, string file, string emailAddress)
+        private static void ParseACX(ExcelWorksheet sheet, string file)
         {
             using (var dbContext = new KdpDbContext())
             {
@@ -199,7 +197,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
                 dbContext.ACXRoyalties.Add(royaltyRow);
         }
 
-        private static void ParseKDP2(ExcelWorksheet sheet, string file, string emailAddress)
+        private static void ParseKDP2(ExcelWorksheet sheet, string file)
         {
             DateTime workbookEndDate = DateTime.Now;
             string dateStr = sheet.GetValue<string>(1, 2);
@@ -208,13 +206,13 @@ namespace FickleDragon.MacKdp.ExcelUtility
             if (salesPeriodCell.Substring(0, salesPeriod.Length) == salesPeriod)
             {
                 DateTime date = DateTime.ParseExact(dateStr, "MMMM yyyy", CultureInfo.CurrentCulture);
-                
+
                 workbookEndDate = new DateTime(date.Year, date.Month, 1).AddMonths(1).AddDays(-1);
             }
 
             using (var dbContext = new KdpDbContext())
             {
-                var workbookFile = dbContext.WorkbookFiles.FirstOrDefault(x => x.FileDate == workbookEndDate && x.EmailAddress == emailAddress);
+                var workbookFile = dbContext.WorkbookFiles.FirstOrDefault(x => x.FileDate == workbookEndDate);
                 var royaltyTypes = dbContext.RoyaltyTypes.ToList();
 
                 if (workbookFile == null)
@@ -226,8 +224,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
                     workbookFile = new WorkbookFile
                     {
                         FileDate = workbookEndDate,
-                        FileName = file,
-                        EmailAddress = emailAddress
+                        FileName = file
                     };
                     dbContext.WorkbookFiles.Add(workbookFile);
                     dbContext.SaveChanges();
@@ -237,7 +234,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
                     var bookEntries = dbContext.BookEntries.Where(x => x.WorkbookFileID == workbookFile.WorkbookFileID);
                     dbContext.BookEntries.RemoveRange(bookEntries);
                 }
-                
+
                 var endDim = sheet.Dimension.End;
                 for (int row = 1; row <= endDim.Row; row++)
                 {
@@ -292,25 +289,24 @@ namespace FickleDragon.MacKdp.ExcelUtility
             }
         }
 
-        private static void ParseKDP(ExcelWorkbook workbook, string file, string emailAddress, DateTime workbookEndDate)
+        private static void ParseKDP(ExcelWorkbook workbook, string file, DateTime workbookEndDate)
         {
             using (var dbContext = new KdpDbContext())
             {
                 var sheet = workbook.Worksheets[Workbook.ForDate(workbookEndDate).SheetNum];
-                var workbookFile = dbContext.WorkbookFiles.FirstOrDefault(x => x.FileDate == workbookEndDate && x.EmailAddress == emailAddress);
+                var workbookFile = dbContext.WorkbookFiles.FirstOrDefault(x => x.FileDate == workbookEndDate);
                 var royaltyTypes = dbContext.RoyaltyTypes.ToList();
 
                 if (workbookFile == null)
                 {
-                    int lastSlash = file.LastIndexOf('\\');
+                    int lastSlash = file.LastIndexOf('/');
                     if (lastSlash > 0)
                         file = file.Substring(lastSlash + 1);
 
                     workbookFile = new WorkbookFile
                     {
                         FileDate = workbookEndDate,
-                        FileName = file,
-                        EmailAddress = emailAddress
+                        FileName = file
                     };
                     dbContext.WorkbookFiles.Add(workbookFile);
                     dbContext.SaveChanges();
@@ -323,61 +319,62 @@ namespace FickleDragon.MacKdp.ExcelUtility
 
                 string lastRoyaltyType = string.Empty;
                 var endDim = sheet.Dimension.End;
+                var wb = Workbook.ForDate(workbookEndDate);
                 for (int row = 1; row <= endDim.Row; row++)
                 {
-                    string asin = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).ASINColNum);
-                    if (asin != null)
-                    {
-                        string title = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).TitleColNum);
-                        double netSold = sheet.GetValue<double>(row, Workbook.ForDate(workbookEndDate).NetSoldColNum);
-                        int royaltyTypeColNum = Workbook.ForDate(workbookEndDate).RoyaltyTypeColNum;
-                        string royaltyTypeString = sheet.GetValue<string>(row, royaltyTypeColNum).Trim().Trim('(', ')');
-                        double royalty = sheet.GetValue<double>(row, Workbook.ForDate(workbookEndDate).RoyaltyColNum);
-                        string typeStr = sheet.GetValue<string>(row, Workbook.ForDate(workbookEndDate).TypeColNum);
+                    string royaltyTypeString = sheet.GetValue<string>(row, wb.RoyaltyTypeColNum);
 
+                    if (royaltyTypeString != null)
+                    {
+                        royaltyTypeString = royaltyTypeString.Trim().Trim('(', ')');
                         if (dbContext.RoyaltyTypes.FirstOrDefault(x => x.RoyaltyTypeID == royaltyTypeString) != null)
                             lastRoyaltyType = royaltyTypeString;
-
-                        // actual sale
-                        if (asin != null
-                          && asin.Length == 10
-                          && asin.Substring(0, 2) == "B0")
-                        {
-                            var bookEntry = new BookEntry
-                            {
-                                RoyaltyTypeID = lastRoyaltyType,
-                                ASIN = asin,
-                                WorkbookFileID = workbookFile.WorkbookFileID,
-                                Title = title
-                            };
-
-                            if (royalty != 0)
-                            {
-                                if (Workbook.IsKENP(typeStr))
-                                {
-                                    bookEntry.KENP += (int)netSold;
-                                    bookEntry.KOLLShare += Convert.ToDecimal(royalty);
-                                }
-                                else if (Workbook.IsKOLL(typeStr))
-                                {
-                                    bookEntry.KOLLBooks += (int)netSold;
-                                    bookEntry.KOLLShare += Convert.ToDecimal(royalty);
-                                }
-                                else // implied, book sold (standard)
-                                {
-                                    bookEntry.SoldBooks += (int)netSold;
-                                    bookEntry.Royalty += Convert.ToDecimal(royalty);
-                                }
-                            }
-                            else
-                            {
-                                bookEntry.FreeBooks += (int)netSold;
-                            }
-
-                            dbContext.BookEntries.Add(bookEntry);
-                            dbContext.SaveChanges();
-                        }
                     }
+
+                    string asin = sheet.GetValue<string>(row, wb.ASINColNum);
+                    if ( asin != null
+                      && asin.Length == 10
+                      && asin.Substring(0, 2) == "B0")
+                    {
+                        string title = sheet.GetValue<string>(row, wb.TitleColNum);
+                        string typeStr = sheet.GetValue<string>(row, wb.TypeColNum);
+                        double netSold = sheet.GetValue<double>(row, wb.NetSoldColNum);
+                        double royalty = sheet.GetValue<double>(row, wb.RoyaltyColNum);
+                        var bookEntry = new BookEntry
+                        {
+                            RoyaltyTypeID = lastRoyaltyType,
+                            ASIN = asin,
+                            WorkbookFileID = workbookFile.WorkbookFileID,
+                            Title = title
+                        };
+
+                        if (royalty != 0)
+                        {
+                            if (Workbook.IsKENP(typeStr))
+                            {
+                                bookEntry.KENP += (int)netSold;
+                                bookEntry.KOLLShare += Convert.ToDecimal(royalty);
+                            }
+                            else if (Workbook.IsKOLL(typeStr))
+                            {
+                                bookEntry.KOLLBooks += (int)netSold;
+                                bookEntry.KOLLShare += Convert.ToDecimal(royalty);
+                            }
+                            else // implied, book sold (standard)
+                            {
+                                bookEntry.SoldBooks += (int)netSold;
+                                bookEntry.Royalty += Convert.ToDecimal(royalty);
+                            }
+                        }
+                        else
+                        {
+                            bookEntry.FreeBooks += (int)netSold;
+                        }
+
+                        dbContext.BookEntries.Add(bookEntry);
+                        dbContext.SaveChanges();
+                    }
+
                 }
             }
         }

@@ -19,7 +19,7 @@ namespace TestDb
                     {
                         using (var fs = File.OpenRead(args[0]))
                         {
-                            FickleDragon.MacKdp.ExcelUtility.WorkbookUtility.Parse(fs, args[0], "berandor@gmail.com");
+                            FickleDragon.MacKdp.ExcelUtility.WorkbookUtility.Parse(fs, args[0]);
                         }
                     }
                     else

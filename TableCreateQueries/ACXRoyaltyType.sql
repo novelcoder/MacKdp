@@ -2,6 +2,6 @@
 
 CREATE TABLE ACXRoyaltyType
 (
-	ACXRoyaltyTypeID INT PRIMARY KEY, 
+	ACXRoyaltyTypeID INTEGER PRIMARY KEY, 
     ACXRoyaltyTypeDesc NVARCHAR(32) NOT NULL
 );

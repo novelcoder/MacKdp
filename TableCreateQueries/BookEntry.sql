@@ -1,7 +1,7 @@
 ﻿drop table if exists BookEntry;
 
 CREATE TABLE BookEntry (
-    BookEntryID    INT     PRIMARY KEY,
+    BookEntryID    INTEGER     PRIMARY KEY,
     ASIN           NCHAR (10)  NULL,
     Title          NVARCHAR (1024)  NULL,
     SoldBooks      INT             NOT NULL,

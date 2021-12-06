@@ -31,7 +31,6 @@ namespace FickleDragon.MacKdp.ExcelUtility
 			using (var dbContext = new KdpDbContext())
 			{
 				var bookNames = (from xx in dbContext.BookEntries
-								 where xx.WorkbookFile.EmailAddress == emailAddress
 								 select new BookNameModel { ASIN = xx.ASIN, Title = xx.Title })
 									.Distinct()
 									.OrderBy(x => x.ASIN);
@@ -42,7 +41,6 @@ namespace FickleDragon.MacKdp.ExcelUtility
 				YearModel currentYear = null;
                 int greatestYear = dbContext.WorkbookFiles.Max(x => x.FileDate).Year;
 				foreach (var file in dbContext.WorkbookFiles
-									.Where(x => x.EmailAddress == emailAddress)
 									.OrderBy(x => x.FileDate))
 				{
 					if (file.FileDate.Year != lastYear)
@@ -68,7 +66,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
 			int count = 0;
 			using (var dbContext = new KdpDbContext())
 			{
-				var files = dbContext.WorkbookFiles.Where(x => x.EmailAddress == email).ToList();
+				var files = dbContext.WorkbookFiles;
 				count = files.Count();
 
 				foreach (var file in files)
@@ -89,7 +87,7 @@ namespace FickleDragon.MacKdp.ExcelUtility
 
 			using (var dbContext = new KdpDbContext())
 			{
-				var files = dbContext.WorkbookFiles.Where(x => x.EmailAddress == email).ToList().OrderByDescending(x => x.FileDate);
+				var files = dbContext.WorkbookFiles.ToList().OrderByDescending(x => x.FileDate);
 				if (files.Count() > 0)
 				{
 					result.DataLoadedMessage = string.Format("You have {0} files loaded in our database. The most recent is dated {1:MM/dd/yyyy}", files.Count(), files.FirstOrDefault().FileDate);
