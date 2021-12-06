@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 
 namespace TestDb
@@ -15,7 +16,8 @@ namespace TestDb
                     Console.WriteLine(args[0]);
                     if (Directory.Exists(args[0]))
                     {
-                        foreach (var file in Directory.EnumerateFiles(args[0],"*.xlsx"))
+                        var files = Directory.EnumerateFiles(args[0], "*.xlsx");
+                        foreach (var file in files.OrderBy( x => x))
                         {
                             Console.WriteLine("File: {0}", file);
                             using (var fs = File.OpenRead(file))

@@ -41,22 +41,6 @@ namespace FickleDragon.MacKdp.ExcelUtility
                 afterJune2017 = true;
             }
 
-
-            //after Oct 2019, hardcover is found in 4, total moved to 5
-            //for (int iii = 4; iii <= 5; iii++)
-            //{
-            //    if (workbook.Worksheets.Count >= iii) //protect from bad array reference
-            //    {
-            //        sheet = workbook.Worksheets[iii];
-            //        if (sheet.Name == "Total Royalty"
-            //          && sheet.Cells[1, 1].GetValue<string>() == "Sales Period")
-            //        {
-            //            afterJune2017 = true;
-            //            break;
-            //        }
-            //    }
-            //}
-
             if (afterJune2017)
             {
                 ParseKDP2(sheet, file);
@@ -93,18 +77,9 @@ namespace FickleDragon.MacKdp.ExcelUtility
                 }
                 else //check for ACX
                 {
-                    const string acx = "acx";
-                    string acxCell = sheet.GetValue<string>(1, 16);
-                    if (acxCell?.ToLower() == acx)
-                    {
+                    sheet = workbook.Worksheets["Sales Details"];
+                    if (sheet != null)
                         ParseACX(sheet, file);
-                    }
-                    else if (workbook.Worksheets.Count > 1
-                           && workbook.Worksheets[2].Name == "Sales Details")
-                    {
-                        sheet = workbook.Worksheets[2];
-                        ParseACX(sheet, file);
-                    }
                 }
             }
         }
@@ -291,8 +266,8 @@ namespace FickleDragon.MacKdp.ExcelUtility
 
                         dbContext.BookEntries.Add(bookEntry);
                     }
-                    dbContext.SaveChanges();
                 }
+                dbContext.SaveChanges();
             }
         }
 
